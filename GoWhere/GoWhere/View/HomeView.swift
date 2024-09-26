@@ -9,6 +9,9 @@ import SwiftUI
 
 struct HomeView: View {
     //  MARK: - PROPERTIES
+    
+    @State private var selectedFeaturedTab: Int = 0 // Manages the horizontal card scrolling (TabView of FeaturedCardView)
+    
     @State var selectedTab: Int = 0 //  Since HomeView is the parent view and should manage the tab selection state, move the @State var selectedTab to HomeView.
     // Manages the TabSelectionView ("For You", "Updated", "Saved")
     
@@ -29,7 +32,7 @@ struct HomeView: View {
                 SearchBarView(text: .constant(""), placeholder: "Search for places")
                 
                 //  MARK: Horizontal Scrollable FeaturedCardView with Dots
-                TabView {
+                TabView(selection: $selectedFeaturedTab) {
                     //  MARK: Tourist Attraction View
                     FeaturedCardView(title: "Vietnam's Secrets", subtitle: "A Wonderful Place", imageName: "GoldenBridge")
                         .tag(0)
@@ -41,11 +44,14 @@ struct HomeView: View {
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))                // Creates horizontal scrolling with dots
 
                 .frame(height: UIScreen.main.bounds.height * 0.67) // Adjusts the height based on the screen size
-                .animation(.easeInOut(duration: 0.5), value: selectedTab) // Adds smooth animation when scrolling
+                
+                //  MARK: - ANIMATION ADDING
+                .animation(.easeInOut(duration: 0.5), value: selectedFeaturedTab) // Adds smooth animation when scrolling
                 .onReceive(timer) { _ in
                     //  Auto-scroll between pages
                     withAnimation{
-                        selectedTab = selectedTab + 1 % 3 // Automatically switch between tab
+                        selectedFeaturedTab = (selectedFeaturedTab + 1) % 3 // Automatically switch between tab - then Loop back to the first tab
+                        //  MARK: This ensures that when selectedFeaturedTab reaches 2 (the last tab), the next increment will loop it back to 0
                     }
                 }
                 
@@ -65,6 +71,15 @@ struct HomeView: View {
                 }
             }
             .padding(.horizontal)
+            
+            //  MARK: - ANIMATION ADDING
+//            .animation(.easeInOut(duration: 0.5), value: selectedTab) // Adds smooth animation when scrolling
+//            .onReceive(timer) { _ in
+//                //  Auto-scroll between pages
+//                withAnimation{
+//                    selectedTab = (selectedTab + 1) % 3 // Automatically switch between tab
+//                }
+//            }
         }
         .navigationTitle("Home")
     }
