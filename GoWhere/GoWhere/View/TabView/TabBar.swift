@@ -12,6 +12,12 @@ struct TabBar: View {
     //  MARK: - PROPERTY
     @State var current = "Home"
     
+    //  MARK: INITIALISATION
+    //Hides the system tab bar across the entire application
+    init(){
+        UITabBar.appearance().isHidden = true
+    }
+    
     //  MARK: - BODY
     var body: some View {
         ZStack {
@@ -58,7 +64,7 @@ struct TabBar: View {
         }
         .padding(.vertical,12)
         .padding(.horizontal)
-        .background(Color(.systemGreen).gradient.opacity(0.6))
+        .background(Color(.systemGreen).gradient.opacity(1))
         .clipShape(Capsule())
         .padding(.horizontal, 25)
         .padding(.bottom, 10)
