@@ -12,16 +12,16 @@ struct HomeView: View {
     
     @State private var selectedFeaturedTab: Int = 0 // Manages the horizontal card scrolling (TabView of FeaturedCardView)
     
-    @State var selectedTab: Int = 0 //  Since HomeView is the parent view and should manage the tab selection state, move the @State var selectedTab to HomeView.
+    @State var selectedTab: Int = 0 //  Since HomeView is the parent view and should manage the tab selection state, move the @State var selectedTab to HomeView. 
     // Manages the TabSelectionView ("For You", "Updated", "Saved")
     
-    let timer = Timer.publish(every: 3, on: .main, in: .common).autoconnect() // Auto-scroll every 3 seconds
+    let timer = Timer.publish(every: 4.5, on: .main, in: .common).autoconnect() // Auto-scroll every 3 seconds
     
     init() {
-            // Make the page indicator dots dark
-            UIPageControl.appearance().currentPageIndicatorTintColor = UIColor.black
-            UIPageControl.appearance().pageIndicatorTintColor = UIColor.black.withAlphaComponent(0.3) // Lighter color for inactive dots
-        }
+        // Make the page indicator dots dark
+        UIPageControl.appearance().currentPageIndicatorTintColor = UIColor.black
+        UIPageControl.appearance().pageIndicatorTintColor = UIColor.black.withAlphaComponent(0.3) // Lighter color for inactive dots
+    }
     
     //  MARK: - BODY
     var body: some View {
@@ -31,22 +31,37 @@ struct HomeView: View {
                 //  MARK: Search Bar View
                 SearchBarView(text: .constant(""), placeholder: "Search for places")
                 
-                //  MARK: Horizontal Scrollable FeaturedCardView with Dots
+                //  MARK: Horizontal Scrollable FeaturedCardView with Dots and 3D Effect
                 TabView(selection: $selectedFeaturedTab) {
-                    //  MARK: Tourist Attraction View
-                    FeaturedCardView(title: "Vietnam's Secrets", subtitle: "A Wonderful Place", imageName: "GoldenBridge")
-                        .tag(0)
-                    FeaturedCardView(title: "Discovering Yosemite", subtitle: "California's Wonder", imageName: "Yosemite")
-                        .tag(1)
-                    FeaturedCardView(title: "Explore Uluru", subtitle: "Australia's Iconic Rock", imageName: "Uluru")
-                        .tag(2)
+                    ForEach(0..<3) { index in
+                        
+                        //  MARK: Use GeometryReader to calculate the position of each card and apply rotation and scaling based on the card’s position relative to the viewport.
+                        GeometryReader { geo in
+                            //  MARK: Tourist Attraction View
+                            FeaturedCardView(title: getTitle(for: index), subtitle: getSubtitle(for: index), imageName: getImage(for: index))
+                            
+                                .offset(x: -5)
+                            
+                            //  MARK: 3D EFFECT
+                                .rotation3DEffect(
+                                    Angle(degrees: Double(geo.frame(in: .global).minX - 30) / -20), // Rotation based on scroll position
+                                    axis: (x: 0, y: 1, z: 0)
+                                )
+                                .scaleEffect(
+                                    1 - abs(geo.frame(in: .global).minX) / 600 // Scale based on the scroll position
+                                )
+//                                .padding(.vertical, 40) // Add padding to create space between cards
+                        }
+                        .tag(index)
+                    }
                 }
-                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))                // Creates horizontal scrolling with dots
-
-                .frame(height: UIScreen.main.bounds.height * 0.67) // Adjusts the height based on the screen size
+                //  MARK: TAB View Design
+                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic)) // Creates horizontal scrolling with dots
                 
-                //  MARK: - ANIMATION ADDING
-                .animation(.easeInOut(duration: 0.5), value: selectedFeaturedTab) // Adds smooth animation when scrolling
+                .frame(height: UIScreen.main.bounds.height * 0.62) // Adjusts the height based on the screen size
+                
+                //  MARK: - ANIMATION ADDING (Auto-Scrolling)
+                .animation(.spring(duration: 1000), value: selectedFeaturedTab) // Adds smooth animation when scrolling
                 .onReceive(timer) { _ in
                     //  Auto-scroll between pages
                     withAnimation{
@@ -73,15 +88,44 @@ struct HomeView: View {
             .padding(.horizontal)
             
             //  MARK: - ANIMATION ADDING
-//            .animation(.easeInOut(duration: 0.5), value: selectedTab) // Adds smooth animation when scrolling
-//            .onReceive(timer) { _ in
-//                //  Auto-scroll between pages
-//                withAnimation{
-//                    selectedTab = (selectedTab + 1) % 3 // Automatically switch between tab
-//                }
-//            }
+            //            .animation(.easeInOut(duration: 0.5), value: selectedTab) // Adds smooth animation when scrolling
+            //            .onReceive(timer) { _ in
+            //                //  Auto-scroll between pages
+            //                withAnimation{
+            //                    selectedTab = (selectedTab + 1) % 3 // Automatically switch between tab
+            //                }
+            //            }
         }
+//        .ignoresSafeArea(.all, edges: .bottom) // Ignore the bottom safe area to prevent the white frame from appearing
         .navigationTitle("Home")
+    }
+    
+    //  MARK: - Helper functions for titles and images
+    private func getTitle(for index: Int) -> String {
+        switch index {
+        case 0: return "Vietnam's Secrets"
+        case 1: return "Discovering Yosemite"
+        case 2: return "Explore Uluru"
+        default: return ""
+        }
+    }
+    
+    private func getSubtitle(for index: Int) -> String {
+        switch index {
+        case 0: return "A Wonderful Place"
+        case 1: return "California's Wonder"
+        case 2: return "Australia's Iconic Rock"
+        default: return ""
+        }
+    }
+    
+    private func getImage(for index: Int) -> String {
+        switch index {
+        case 0: return "GoldenBridge"
+        case 1: return "Yosemite"
+        case 2: return "Uluru"
+        default: return ""
+        }
     }
 }
 

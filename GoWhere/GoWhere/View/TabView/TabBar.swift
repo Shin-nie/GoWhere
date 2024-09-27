@@ -14,9 +14,14 @@ struct TabBar: View {
     
     //  MARK: - BODY
     var body: some View {
-        VStack(spacing: 0) {
+        ZStack {
+            // TabView that extends across the entire screen
             tabView
-            tabButton
+
+            VStack {
+                Spacer()
+                tabButton // Tab buttons at the bottom
+            }
         }
     }
     
@@ -32,6 +37,7 @@ struct TabBar: View {
             //YoutubeView()
             Color(.teal)
                 .tag("Youtube")
+                .edgesIgnoringSafeArea(.all) // Ensure it fills the whole screen
             
             //SettingView()
             Color(.teal)
@@ -55,7 +61,7 @@ struct TabBar: View {
         .background(Color(.systemGreen).gradient.opacity(0.6))
         .clipShape(Capsule())
         .padding(.horizontal, 25)
-        .padding(.top);
+        .padding(.bottom, 10)
     }
 }
 
