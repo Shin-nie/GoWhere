@@ -33,7 +33,7 @@ struct HomeView: View {
                 
                 //  MARK: Horizontal Scrollable FeaturedCardView with Dots and 3D Effect
                 TabView(selection: $featuredViewModel.selectedFeaturedTab) {
-                    ForEach(0..<featuredViewModel.featuredPlaces.count) { index in
+                    ForEach(Array(featuredViewModel.featuredPlaces.enumerated()), id: \.1.title) { index, featuredPlace in
                         
                         //  MARK: Use GeometryReader to calculate the position of each card and apply rotation and scaling based on the card’s position relative to the viewport.
                         GeometryReader { geo in
@@ -57,7 +57,7 @@ struct HomeView: View {
                 //  MARK: TAB View Design
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic)) // Creates horizontal scrolling with dots
                 
-                .frame(height: UIScreen.main.bounds.height * 0.62) // Adjusts the height based on the screen size
+                .frame(height: UIScreen.main.bounds.height * 0.61) // Adjusts the height based on the screen size
                 
                 //  MARK: - ANIMATION ADDING (Auto-Scrolling)
                 .animation(.spring(duration: 1000), value: featuredViewModel.selectedFeaturedTab) // Adds smooth animation when scrolling
@@ -71,12 +71,13 @@ struct HomeView: View {
                 
                 //  MARK: - Tab View
                 TabSelectionView(selectedTab: $viewModel.selectedTab)
+                    .offset(y: -10)
                 //  Conditionally show SampleCardView based on the selected tab
                 // MARK: Place Card under Tab - Dynamically loaded via ViewModel
                 PlaceCardView(place: viewModel.getCurrentPlace())
+                    .offset(y: -5)
             }
             .padding(.horizontal)
-            
             //  MARK: - ANIMATION ADDING (auto-scrolling)
             //            .animation(.easeInOut(duration: 0.5), value: selectedTab) // Adds smooth animation when scrolling
             //            .onReceive(timer) { _ in
@@ -112,32 +113,32 @@ struct SearchBarView: View {
             HStack {
                 Image(systemName: "magnifyingglass")
                     .font(.system(size: 20, weight: .semibold))
-                    .foregroundColor(.white.opacity(0.8)) // Adjusting the icon color
+                    .foregroundColor(.gray.opacity(1)) // Adjusting the icon color
                     .padding(.horizontal, 8)
                 
                 TextField(placeholder, text: $text)
-                    .foregroundStyle(.white) 
+                    .foregroundStyle(.white)
                 
             }
             .background {
                 ZStack {
-                    RoundedRectangle(cornerRadius: 10.0)
-                        .fill(Color(.systemGreen).gradient.opacity(0.8)) // Background color with gradient
-                        .frame(height: 50)
+                    RoundedRectangle(cornerRadius: 20.0)
+                        .fill(Color(.systemGreen).gradient.opacity(0.3)) // Background color with gradient
+                        .frame(height: 45)
                     // INNER SHADOW (for TextField)
                     RoundedRectangle(cornerRadius: 10)
                         .stroke(Color.gray, lineWidth: 4) // Border color and width
                         .blur(radius: 2.5) // Soft shadow effect
                         .offset(x: 0, y: 2) // Shadow offset
                         .mask(
-                            RoundedRectangle(cornerRadius: 10)
+                            RoundedRectangle(cornerRadius: 20)
                                 .fill(
                                     LinearGradient(gradient: Gradient(colors: [Color.black.opacity(0.5), Color.clear]), startPoint: .top, endPoint: .bottom)
                                 )
                         )
                 }
             }
-            //.padding(.horizontal, -15) // Horizontal Padding of whole search bar
+            .padding(.horizontal, 15) // Horizontal Padding of whole search bar
         }
         .padding(.vertical) // Adjust outer padding
     }
@@ -150,7 +151,6 @@ struct FeaturedCardView: View {
     //    var subtitle: String
     //    var imageName: String
     var featuredPlace: FeaturedPlace // Use protocol-based data
-    
     
     var body: some View {
         ZStack(alignment: .bottom) {

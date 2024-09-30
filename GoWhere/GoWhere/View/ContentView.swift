@@ -15,7 +15,7 @@ struct ContentView: View {
                 TabBar() // Add TabBar view here
             }
         }
-        .navigationTitle("GoWhere") // Add navigation title or customize as needed
+        //.navigationTitle("GoWhere") // Add navigation title or customize as needed
     }
 }
 

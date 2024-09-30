@@ -29,7 +29,8 @@ struct Place: PlaceDataProtocol {
 }
 
 //  MARK: - Featured Place Model
-struct FeaturedPlace: FeaturedPlaceProtocol {
+struct FeaturedPlace: FeaturedPlaceProtocol, Identifiable {
+    var id = UUID() // Use UUID to provide a unique identifier
     var title: String
     var subtitle: String // Must have base on the FeaturedCardDataProtocol
     var imageName: String

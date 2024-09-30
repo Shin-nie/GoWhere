@@ -11,7 +11,9 @@ import SwiftUI
 struct GoWhereApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationStack {
+                LaunchScreenView()
+            }
         }
     }
 }
