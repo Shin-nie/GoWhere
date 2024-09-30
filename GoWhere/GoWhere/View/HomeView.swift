@@ -49,7 +49,7 @@ struct HomeView: View {
                                 .scaleEffect(
                                     1 - abs(geo.frame(in: .global).minX) / 600 // Scale based on the scroll position
                                 )
-//                                .padding(.vertical, 40) // Add padding to create space between cards
+                            //                                .padding(.vertical, 40) // Add padding to create space between cards
                         }
                         .tag(index)
                     }
@@ -86,7 +86,7 @@ struct HomeView: View {
             //                }
             //            }
         }
-//        .ignoresSafeArea(.all, edges: .bottom) // Ignore the bottom safe area to prevent the white frame from appearing
+        //        .ignoresSafeArea(.all, edges: .bottom) // Ignore the bottom safe area to prevent the white frame from appearing
         .navigationTitle("Explore Places")
     }
     
@@ -108,34 +108,49 @@ struct SearchBarView: View {
     var placeholder: String
     
     var body: some View {
-        TextField(placeholder, text: $text)
-            .padding()
-            .padding(.leading, 24)
-            .frame(height: 50)
-            .foregroundStyle(.white)
-            .background(Color(.systemGreen).gradient.opacity(1))
-
-        //.background(Color.gray.opacity(0.1))
-            .cornerRadius(10)
-            .overlay(
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(.white)
-                        .padding(.leading, 8)
-                    Spacer()
+        ZStack {
+            HStack {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundColor(.white.opacity(0.8)) // Adjusting the icon color
+                    .padding(.horizontal, 8)
+                
+                TextField(placeholder, text: $text)
+                    .foregroundStyle(.white) 
+                
+            }
+            .background {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10.0)
+                        .fill(Color(.systemGreen).gradient.opacity(0.8)) // Background color with gradient
+                        .frame(height: 50)
+                    // INNER SHADOW (for TextField)
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.gray, lineWidth: 4) // Border color and width
+                        .blur(radius: 2.5) // Soft shadow effect
+                        .offset(x: 0, y: 2) // Shadow offset
+                        .mask(
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(
+                                    LinearGradient(gradient: Gradient(colors: [Color.black.opacity(0.5), Color.clear]), startPoint: .top, endPoint: .bottom)
+                                )
+                        )
                 }
-            )
-        //                    .padding()
+            }
+            //.padding(.horizontal, -15) // Horizontal Padding of whole search bar
+        }
+        .padding(.vertical) // Adjust outer padding
     }
+    
 }
 
 //  MARK: - Featured Card View
 struct FeaturedCardView: View {
-//    var title: String
-//    var subtitle: String
-//    var imageName: String
+    //    var title: String
+    //    var subtitle: String
+    //    var imageName: String
     var featuredPlace: FeaturedPlace // Use protocol-based data
-
+    
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -200,9 +215,9 @@ struct TabSelectionView: View {
 
 // MARK: - Sample Card View
 struct PlaceCardView: View {
-//    var title: String
-//    var description: String
-//    var imageName: String
+    //    var title: String
+    //    var description: String
+    //    var imageName: String
     var place: Place // Use protocol-based data
     
     var body: some View {

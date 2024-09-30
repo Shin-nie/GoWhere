@@ -37,12 +37,12 @@ struct TabBar: View {
             HomeView()
                 .tag("Home")
             
-            TravelInfoView()
+            MapView()
                 .tag("Info")
             
             //YoutubeView()
             Color(.teal)
-                .tag("Youtube")
+                .tag("Video")
                 .edgesIgnoringSafeArea(.all) // Ensure it fills the whole screen
             
             //SettingView()
@@ -58,7 +58,7 @@ struct TabBar: View {
             Spacer(minLength: 0)
             TabButton(title: "Info", image: "mappin.and.ellipse.circle.fill", isSelected: $current)
             Spacer(minLength: 0)
-            TabButton(title: "Youtube", image: "play.rectangle.on.rectangle", isSelected: $current)
+            TabButton(title: "Video", image: "play.rectangle.on.rectangle", isSelected: $current)
             Spacer(minLength: 0)
             TabButton(title: "Setting", image: "gearshape.fill", isSelected: $current)
         }
@@ -68,6 +68,10 @@ struct TabBar: View {
         .clipShape(Capsule())
         .padding(.horizontal, 25)
         .padding(.bottom, 10)
+        
+        //  Shadowing depth
+        .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
+        .shadow(color: .black.opacity(0.1), radius: 1, x: 2, y:3)
     }
 }
 
