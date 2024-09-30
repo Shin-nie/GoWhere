@@ -185,8 +185,8 @@ struct ItinerarySectionView: View {
                 .font(.headline)
             
             itineraryItem(icon: "leaf.fill", title: "Mariposa Grove", description: "Largest sequoia trees grove")
-            itineraryItem(icon: "mountain.fill", title: "Sentinel Dome", description: "Granite dome known for Jeffrey Pine")
-            itineraryItem(icon: "figure.skiing", title: "Badger Ski Area", description: "Skiing area known for Jeffrey Pine")
+            itineraryItem(icon: "mountain.2.fill", title: "Sentinel Dome", description: "Granite dome known for Jeffrey Pine")
+            itineraryItem(icon: "figure.skiing.downhill", title: "Badger Ski Area", description: "Skiing area known for Jeffrey Pine")
             itineraryItem(icon: "water.waves", title: "Yosemite Falls", description: "Highest waterfall in Yosemite Park")
             
             Text("This itinerary usually takes 2-3 days. You can expand to more days if you want to take a deep tour to any of these locations.")

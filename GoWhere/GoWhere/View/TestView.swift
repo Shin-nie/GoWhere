@@ -466,7 +466,6 @@ struct TestView: View {
         }
         func body(content: Self.Content) -> some View {
             content
-            /// Add SFProText-Semibold file to Xcode, and reference it below:
               .font(.custom("SFProText-Semibold", size: 15))
               .tracking(-0.24)
               .clipped()

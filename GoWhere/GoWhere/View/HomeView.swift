@@ -117,13 +117,13 @@ struct SearchBarView: View {
                     .padding(.horizontal, 8)
                 
                 TextField(placeholder, text: $text)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.black)
                 
             }
             .background {
                 ZStack {
                     RoundedRectangle(cornerRadius: 20.0)
-                        .fill(Color(.systemGreen).gradient.opacity(0.3)) // Background color with gradient
+                        .fill(.lightGreen.gradient.opacity(1)) // Background color with gradient
                         .frame(height: 45)
                     // INNER SHADOW (for TextField)
                     RoundedRectangle(cornerRadius: 10)

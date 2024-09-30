@@ -41,12 +41,12 @@ struct TabBar: View {
                 .tag("Info")
             
             //YoutubeView()
-            Color(.teal)
+            VideoView()
                 .tag("Video")
                 .edgesIgnoringSafeArea(.all) // Ensure it fills the whole screen
             
             //SettingView()
-            Color(.teal)
+            SettingsView()
                 .tag("Setting")
         }
     }
@@ -64,7 +64,7 @@ struct TabBar: View {
         }
         .padding(.vertical,12)
         .padding(.horizontal)
-        .background(Color(.systemGreen).gradient.opacity(1))
+        .background(.lightGreen.gradient.opacity(1))
         .clipShape(Capsule())
         .padding(.horizontal, 25)
         .padding(.bottom, 10)
