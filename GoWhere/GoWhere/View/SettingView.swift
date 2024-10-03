@@ -6,160 +6,100 @@
 //
 
 import SwiftUI
-import Combine
-
-class SettingsViewModel: ObservableObject {
-    @Published var profileImage: UIImage? = UIImage(systemName: "person.circle.fill")
-    @Published var username: String = ""
-    @Published var email: String = ""
-
-    // Placeholder logout functionality
-    func logOut() {
-        print("User logged out.")
-        // Implement actual logout logic, e.g., clearing session data or redirecting to login
-    }
-}
-
-import SwiftUI
 
 struct SettingsView: View {
-    @StateObject private var viewModel = SettingsViewModel()
-    @State private var showImagePicker: Bool = false
-    @State private var inputImage: UIImage?
-
-    var body: some View {
-        NavigationView {
-            VStack(spacing: 20) {
-                // Profile Image
-                ProfileImageView(image: viewModel.profileImage)
-                    .onTapGesture {
-                        self.showImagePicker = true
-                    }
-                
-                Text("Tap to change profile image")
-                    .font(.footnote)
-                    .foregroundColor(.gray)
-                
-                // User Credentials
-                CredentialsView(username: $viewModel.username, email: $viewModel.email)
-                    .padding(.horizontal, 20)
-                
-                // Log Out Button
-                Button(action: {
-                    viewModel.logOut()
-                }) {
-                    Text("Log Out")
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.red)
-                        .cornerRadius(10)
-                }
-                .padding(.horizontal, 20)
-                
-                Spacer()
-            }
-            .navigationTitle("Settings")
-            .sheet(isPresented: $showImagePicker, onDismiss: loadImage) {
-                ImagePicker(image: self.$inputImage)
-            }
-        }
-    }
-    
-    // Load selected image and update ViewModel
-    func loadImage() {
-        guard let inputImage = inputImage else { return }
-        viewModel.profileImage = inputImage
-    }
-}
-
-struct ProfileImageView: View {
-    var image: UIImage?
-    
-    var body: some View {
-        Image(uiImage: image ?? UIImage(systemName: "person.circle.fill")!)
-            .resizable()
-            .scaledToFill()
-            .frame(width: 150, height: 150)
-            .clipShape(Circle())
-            .overlay(Circle().stroke(Color.gray, lineWidth: 2))
-            .shadow(radius: 10)
-            .padding(.top, 20)
-    }
-}
-
-struct CredentialsView: View {
     @Binding var username: String
-    @Binding var email: String
+    @State private var showChangeCredentials = false
+    @State private var newUsername = ""
+    @State private var newPassword = ""
+    @State private var message = ""
     
     var body: some View {
-        VStack(spacing: 15) {
-            TextField("Username", text: $username)
+        VStack {
+            Text("Welcome, \(username)")
+                .font(.largeTitle)
                 .padding()
-                .background(Color(.secondarySystemBackground))
-                .cornerRadius(10)
             
-            TextField("Email", text: $email)
-                .keyboardType(.emailAddress)
-                .padding()
-                .background(Color(.secondarySystemBackground))
-                .cornerRadius(10)
-        }
-    }
-}
-
-import SwiftUI
-
-struct ImagePicker: UIViewControllerRepresentable {
-    @Binding var image: UIImage?
-    @Environment(\.presentationMode) var presentationMode
-
-    // Coordinator to handle UIImagePickerControllerDelegate functions
-    class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
-        let parent: ImagePicker
-
-        init(_ parent: ImagePicker) {
-            self.parent = parent
-        }
-
-        // Called when an image is picked
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            if let uiImage = info[.originalImage] as? UIImage {
-                parent.image = uiImage
+            Button(action: logOut) {
+                Text("Log Out")
+                    .font(.headline)
+                    .padding()
+                    .frame(width: 220, height: 60)
+                    .background(Color.red)
+                    .cornerRadius(15.0)
+                    .foregroundColor(.white)
             }
-            parent.presentationMode.wrappedValue.dismiss()
+            .padding(.top, 20)
+            
+            Button(action: { showChangeCredentials.toggle() }) {
+                Text("Change Credentials")
+                    .font(.headline)
+                    .padding()
+                    .frame(width: 220, height: 60)
+                    .background(Color.orange)
+                    .cornerRadius(15.0)
+                    .foregroundColor(.white)
+            }
+            .padding(.top, 20)
+            
+            if showChangeCredentials {
+                VStack {
+                    TextField("New Username", text: $newUsername)
+                        .padding()
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(5.0)
+                        .padding(.bottom, 20)
+                    
+                    SecureField("New Password", text: $newPassword)
+                        .padding()
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(5.0)
+                        .padding(.bottom, 20)
+                    
+                    Button(action: changeCredentials) {
+                        Text("Submit")
+                            .font(.headline)
+                            .padding()
+                            .frame(width: 220, height: 60)
+                            .background(Color.blue)
+                            .cornerRadius(15.0)
+                            .foregroundColor(.white)
+                    }
+                    .padding(.top, 20)
+                }
+            }
+            
+            Text(message)
+                .foregroundColor(.red)
+                .padding()
         }
-
-        // Called when the user cancels picking an image
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            parent.presentationMode.wrappedValue.dismiss()
+        .padding()
+        .navigationTitle("Settings")
+    }
+    
+    // Log Out Function
+    private func logOut() {
+        username = ""
+        message = "You have successfully logged out."
+        // Navigate back to login screen
+    }
+    
+    // Change Credentials Function
+    private func changeCredentials() {
+        guard !newUsername.isEmpty && !newPassword.isEmpty else {
+            message = "Please fill in all fields."
+            return
+        }
+        
+        if PersistenceController.shared.updateUserCredentials(currentUsername: username, newUsername: newUsername, newPassword: newPassword) {
+            message = "Credentials changed successfully!"
+            username = newUsername
+        } else {
+            message = "Failed to change credentials."
         }
     }
-
-    // Specify that the UIViewControllerType is UIImagePickerController
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-
-    // Creates the UIImagePickerController
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-        let picker = UIImagePickerController()
-        // Assign the coordinator as the delegate
-        picker.delegate = context.coordinator
-        return picker
-    }
-
-    // Updates the UIImagePickerController
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {
-        // No update logic needed in this case
-    }
-
-    // Specify the UIViewControllerType
-    typealias UIViewControllerType = UIImagePickerController
 }
-
 
 #Preview {
-    SettingsView()
+    SettingsView(username: .constant("Sample User"))
 }

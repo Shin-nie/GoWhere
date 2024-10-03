@@ -12,22 +12,28 @@ struct TabBar: View {
     //  MARK: - PROPERTY
     @State var current = "Home"
     
+    // Accept the username as a Binding
+    @Binding var username: String
+    
     //  MARK: INITIALISATION
     //Hides the system tab bar across the entire application
-    init(){
-        UITabBar.appearance().isHidden = true
-    }
+//    init(){
+//        UITabBar.appearance().isHidden = true
+//    }
     
     //  MARK: - BODY
     var body: some View {
         ZStack {
             // TabView that extends across the entire screen
             tabView
-
+            
             VStack {
                 Spacer()
                 tabButton // Tab buttons at the bottom
             }
+            .onAppear {
+                       UITabBar.appearance().isHidden = true // Hide the system tab bar
+                   }
         }
     }
     
@@ -45,8 +51,8 @@ struct TabBar: View {
                 .tag("Video")
                 .edgesIgnoringSafeArea(.all) // Ensure it fills the whole screen
             
-            //SettingView()
-            SettingsView()
+            //SettingView() - pass the username binding to SettingsView
+            SettingsView(username: $username)
                 .tag("Setting")
         }
     }
@@ -77,5 +83,5 @@ struct TabBar: View {
 
 //  MARK: Previews
 #Preview {
-    TabBar()
+    TabBar(username: .constant("Sample User"))
 }

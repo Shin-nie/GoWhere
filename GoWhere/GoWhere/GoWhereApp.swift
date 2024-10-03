@@ -9,10 +9,14 @@ import SwiftUI
 
 @main
 struct GoWhereApp: App {
+    
+    let persistenceController = PersistenceController.shared
+    
     var body: some Scene {
         WindowGroup {
             NavigationStack {
                 LaunchScreenView()
+                    .environment(\.managedObjectContext, persistenceController.container.viewContext)
             }
         }
     }

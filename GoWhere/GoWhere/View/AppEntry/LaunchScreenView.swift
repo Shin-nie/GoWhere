@@ -26,7 +26,7 @@ struct LaunchScreenView: View {
             BGM_Color
             //Navigates to the APP ENTRY VIEW after the LAUNCH SCREEN
             if isActive {
-                ContentView()
+                LoginView()
                     .background(.white)
             } else {
                 VStack {
@@ -52,7 +52,7 @@ struct LaunchScreenView: View {
             }
         }
         .onAppear(perform: {
-            ContentView()
+            LoginView()
         })
     }
     
