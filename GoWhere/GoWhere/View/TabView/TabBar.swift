@@ -14,12 +14,13 @@ struct TabBar: View {
     
     // Accept the username as a Binding
     @Binding var username: String
-    
+    @Binding var isLoggedIn: Bool // Add binding for login status
+
     //  MARK: INITIALISATION
     //Hides the system tab bar across the entire application
-//    init(){
-//        UITabBar.appearance().isHidden = true
-//    }
+    //    init(){
+    //        UITabBar.appearance().isHidden = true
+    //    }
     
     //  MARK: - BODY
     var body: some View {
@@ -32,8 +33,8 @@ struct TabBar: View {
                 tabButton // Tab buttons at the bottom
             }
             .onAppear {
-                       UITabBar.appearance().isHidden = true // Hide the system tab bar
-                   }
+                UITabBar.appearance().isHidden = true // Hide the system tab bar
+            }
         }
     }
     
@@ -52,7 +53,7 @@ struct TabBar: View {
                 .edgesIgnoringSafeArea(.all) // Ensure it fills the whole screen
             
             //SettingView() - pass the username binding to SettingsView
-            SettingsView(username: $username)
+            SettingsView(username: $username, isLoggedIn: $isLoggedIn) // Pass isLoggedIn to SettingsView
                 .tag("Setting")
         }
     }
@@ -83,5 +84,5 @@ struct TabBar: View {
 
 //  MARK: Previews
 #Preview {
-    TabBar(username: .constant("Sample User"))
+    TabBar(username: .constant("Sample User"), isLoggedIn: .constant(true))
 }

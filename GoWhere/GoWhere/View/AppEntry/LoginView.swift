@@ -10,10 +10,15 @@ import CoreData
 struct LoginView: View {
     @Environment(\.managedObjectContext) private var viewContext
     
-    @State private var username = ""
+    @Binding var username: String
+    @Binding var isLoggedIn: Bool
     @State private var password = ""
-    @State private var isLoggedIn = false
     @State private var message = ""
+    
+    //    @State private var username = ""
+    //    @State private var password = ""
+    //    @State private var isLoggedIn = false
+    //    @State private var message = ""
     
     var body: some View {
         NavigationView {
@@ -69,14 +74,14 @@ struct LoginView: View {
                 .navigationBarBackButtonHidden()
                 
                 //After login, navigate to TabBar
-//                NavigationLink(destination: TabBar(username: $username, isLoggedIn: $isLoggedIn), isActive: $isLoggedIn) {
-//                    EmptyView()
-//                }
+                NavigationLink(destination: TabBar(username: $username, isLoggedIn: $isLoggedIn), isActive: $isLoggedIn) {
+                    EmptyView()
+                }
                 
                 // NavigationLink to SettingsView, activated by isLoggedIn
-                NavigationLink(destination: ContentView(), isActive: $isLoggedIn) {
-                    EmptyView() // This ensures the navigation happens automatically
-                }
+                //                NavigationLink(destination: ContentView(), isActive: $isLoggedIn) {
+                //                    EmptyView() // This ensures the navigation happens automatically
+                //                }
             }
             .padding()
             .navigationTitle("Login/Sign Up")
@@ -118,6 +123,10 @@ struct LoginView: View {
     }
 }
 
+//#Preview {
+//    LoginView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+//}
+
 #Preview {
-    LoginView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+    LoginView(username: .constant("Sample User"), isLoggedIn: .constant(false))
 }

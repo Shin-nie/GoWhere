@@ -8,11 +8,16 @@
 import SwiftUI
 
 struct SettingsView: View {
+    
     @Binding var username: String
+    @Binding var isLoggedIn: Bool // New Binding for login status
+    
+    
     @State private var showChangeCredentials = false
     @State private var newUsername = ""
     @State private var newPassword = ""
     @State private var message = ""
+    
     
     var body: some View {
         VStack {
@@ -78,11 +83,11 @@ struct SettingsView: View {
     }
     
     // Log Out Function
-    private func logOut() {
-        username = ""
-        message = "You have successfully logged out."
-        // Navigate back to login screen
-    }
+        private func logOut() {
+            username = ""
+            isLoggedIn = false // Set isLoggedIn to false to navigate back to LoginView
+            message = "You have successfully logged out."
+        }
     
     // Change Credentials Function
     private func changeCredentials() {
@@ -101,5 +106,7 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView(username: .constant("Sample User"))
+    NavigationStack {
+        SettingsView(username: .constant("Sample User"), isLoggedIn: .constant(true))
+    }
 }

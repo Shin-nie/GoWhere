@@ -1,40 +1,42 @@
-//
-//  LaunchScreenView.swift
-//  GoWhere
-//
-//  Created by Hang Vu on 30/9/2024.
-
-
 import SwiftUI
 
-//LAUNCH SCREEN VIEW Struct
+// LAUNCH SCREEN VIEW Struct
 struct LaunchScreenView: View {
     
-    //STATE variable to track whether the view is active
+    // STATE variable to track whether the view is active
     @State private var isActive = false
-    //STATE variable to manage the size of the view
+    // STATE variable to manage the size of the view
     @State private var size = 0.8
-    //STATE variable to control the opacity of the view
+    // STATE variable to control the opacity of the view
     @State private var opacity = 0.5
     
-    //  APP ViewModel
-    //  @ObservedObject private var viewModel: ?ViewModel = ?ViewModel()
+    // STATE for managing username and login status
+    @State private var username: String = ""
+    @State private var isLoggedIn: Bool = false
     
-    //LAUNCH SCREEN VIEW
+    // LAUNCH SCREEN VIEW
     var body: some View {
         ZStack {
             BGM_Color
-            //Navigates to the APP ENTRY VIEW after the LAUNCH SCREEN
+            
+            // Navigate to the appropriate view based on login status
             if isActive {
-                LoginView()
-                    .background(.white)
+                if isLoggedIn {
+                    // Navigate to TabBar if the user is already logged in
+                    TabBar(username: $username, isLoggedIn: $isLoggedIn)
+                        .background(Color.white)
+                } else {
+                    // Otherwise, navigate to LoginView
+                    LoginView(username: $username, isLoggedIn: $isLoggedIn)
+                        .background(Color.white)
+                }
             } else {
                 VStack {
                     appLogo
                         .scaleEffect(size)
                         .opacity(opacity)
                         .onAppear {
-                            //Providing APP LOGO ANIMATION 0 DURATION 1.2
+                            // Providing APP LOGO ANIMATION with duration 1.2
                             withAnimation(.easeIn(duration: 1.2)) {
                                 self.size = 0.9
                                 self.opacity = 1.0
@@ -42,7 +44,7 @@ struct LaunchScreenView: View {
                         }
                 }
                 .onAppear {
-                    //ANIMATION to the next view
+                    // Animation to the next view after a delay
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
                         withAnimation {
                             self.isActive = true
@@ -51,13 +53,12 @@ struct LaunchScreenView: View {
                 }
             }
         }
-        .onAppear(perform: {
-            LoginView()
-        })
+        .onAppear {
+            // Additional setup if necessary
+        }
     }
     
-    
-    //APP LOGO Appearance
+    // APP LOGO Appearance
     var appLogo: some View {
         VStack {
             Image(.logo)
@@ -79,7 +80,7 @@ struct LaunchScreenView: View {
         }
     }
     
-    //  MARK: - BACKGROUND COLOR THEME
+    // MARK: - BACKGROUND COLOR THEME
     var BGM_Color: some View {
         ZStack{}
             .frame(minWidth: UIScreen.main.bounds.width, maxHeight: UIScreen.main.bounds.height, alignment: .topLeading)
@@ -98,4 +99,3 @@ struct LaunchScreenView: View {
 #Preview {
     LaunchScreenView()
 }
-
