@@ -28,8 +28,196 @@ let blackGradient = LinearGradient(
 )
 
 struct PlaceDetailSheetView: View {
+    let placeName: String
     
-    var placeName: String
+    @State private var countryInfo: CountryInfo?
+    @State private var countryActivities: [Activity] = []
+    @State private var isLoading = false
+    @State private var errorMessage: String?
+    @State private var searchQuery = ""
+    
+    // State for displaying tapped image in a modal view
+    @State private var selectedImage: CountryImage? = nil
+    
+    let apiService = ApiService()
+
+    var body: some View {
+        NavigationView {
+            VStack {
+                
+                HeaderView()
+                    .padding(.horizontal)
+                
+                HStack{
+                    Text("Discovering \(placeName)")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                    
+                    Spacer()
+                }
+                .padding()
+
+                // Handle loading state
+                if isLoading {
+                    VStack {
+                        ProgressView("Fetching Data...")
+                            .padding()
+                        Spacer()
+                    }
+                }
+                
+                // Display error message if there's an error
+                else if let errorMessage = errorMessage {
+                    VStack {
+                        Text("Error: \(errorMessage)")
+                            .foregroundColor(.red)
+                            .padding()
+                        Spacer()
+                    }
+                }
+
+                // Display country information if available
+                else if let countryInfo = countryInfo {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 20) {
+                            // Country information section
+                            Text(countryInfo.info)
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                                .padding(.horizontal)
+                            
+                            // Display main image
+                            if let url = URL(string: countryInfo.image_url) {
+                                AsyncImage(url: url) { image in
+                                    image.resizable()
+                                        .scaledToFit()
+                                } placeholder: {
+                                    ProgressView()
+                                }
+                                .frame(height: 200)
+                                .cornerRadius(15)
+                                .padding(.horizontal)
+                            }
+
+                            // Section for additional images
+                            Text("Gallery")
+                                .font(.headline)
+                                .padding(.horizontal)
+                            
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack {
+                                    ForEach(countryInfo.country_images) { image in
+                                        VStack {
+                                            if let url = URL(string: image.imageUrl) {
+                                                AsyncImage(url: url) { img in
+                                                    img.resizable()
+                                                        .scaledToFill()
+                                                        .frame(width: 150, height: 100)
+                                                        .cornerRadius(10)
+                                                        .clipped()
+                                                        .onTapGesture {
+                                                            // Set selected image and show the focused view
+                                                            selectedImage = image
+                                                        }
+                                                } placeholder: {
+                                                    ProgressView()
+                                                }
+                                            }
+                                            Text(image.title)
+                                                .font(.caption)
+                                                .foregroundColor(.gray)
+                                                .frame(maxWidth: 150)
+                                            
+                                        }
+                                        .padding(.horizontal, 5)
+                                    }
+                                }
+                            }
+                            .padding(.horizontal)
+
+                            // Section for activities
+                            if !countryActivities.isEmpty {
+                                Text("Activities")
+                                    .font(.headline)
+                                    .padding(.horizontal)
+                                
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack {
+                                        ForEach(countryActivities, id: \.title) { activity in
+                                            VStack(alignment: .leading) {
+                                                Text(activity.title)
+                                                    .font(.subheadline)
+                                                    .bold()
+                                                    .padding(.bottom, 2)
+                                                Text(activity.activity)
+                                                    .font(.body)
+                                                    .foregroundColor(.secondary)
+                                            }
+                                            .frame(width: 320)
+                                            .padding(.horizontal)
+                                            .padding(.vertical, 8)
+                                            .background(Color(UIColor.systemGray6))
+                                            .cornerRadius(10)
+                                            .padding(.horizontal)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    // Show the image in focus when tapped
+                    .sheet(item: $selectedImage) { image in
+                        FocusedImageView(image: image)
+                    }
+                } else {
+                    Spacer()
+                }
+            }
+            .navigationBarTitle("", displayMode: .inline)
+            .onAppear(){
+                fetchData(for: placeName);
+            }
+        }
+        
+    }
+
+    private func fetchData(for country: String) {
+        isLoading = true
+        errorMessage = nil
+        countryInfo = nil
+        countryActivities = []
+
+        // Fetch country info
+        apiService.fetchCountryInfo(country: country) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let data):
+                    countryInfo = data
+                case .failure(let error):
+                    errorMessage = error.localizedDescription
+                }
+            }
+        }
+        
+        // Fetch country activities
+        apiService.fetchCountryActivities(country: country) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let activities):
+                    countryActivities = activities
+                case .failure(let error):
+                    errorMessage = error.localizedDescription
+                }
+                isLoading = false
+            }
+        }
+    }
+}
+
+//  MARK: - Header View
+struct HeaderView: View {
+    @Environment(\.dismiss) var dismiss
+    @State private var isFavorite: Bool = false // Track if the button is favorited
     
     var body: some View {
         VStack {
@@ -37,54 +225,15 @@ struct PlaceDetailSheetView: View {
             Capsule()
                 .frame(width: 45, height: 6)
                 .foregroundColor(Color(.systemGray3))
-                .padding(.top, -8) // Adjust padding as needed
+                .padding(.vertical, 8) // Adjust padding as needed
             
-            ScrollView(.vertical, showsIndicators: false) {
+            HStack {
                 
-                VStack(alignment: .leading, spacing: 16) {
-                    // Header with back and favorite buttons
-                    HeaderView()
-                    
-                    // Discovering title section
-                    PlaceTitleSection(placeName: placeName)
-                    
-                    // Photos section
-                    PhotosSectionView(imageURLs: sampleImageURLs3)
-                    
-                    // Itinerary Section
-                    ItinerarySectionView()
-                    
-                    // Note Section
-                    NotesView()
-                    
-                    Spacer() // Push content up to make space at the bottom
-                    
-                }
-                .padding(.horizontal) // Apply horizontal padding to the entire VStack
+                Spacer()
+                
+                // Favorite Button
+                FavoriteButtonView(isFavorite: $isFavorite)
             }
-        }// End Of VStack
-        //  The View of the Sheet
-        .padding(.top, 16)
-        .background(Color.white)
-        .cornerRadius(20)
-        .shadow(radius: 10)
-        .ignoresSafeArea(edges: .bottom)
-    }
-}
-
-//  MARK: - Header View
-struct HeaderView: View {
-    @State private var isFavorite: Bool = false // Track if the button is favorited
-    
-    var body: some View {
-        HStack {
-            //  Back Button
-            CircleButtonView(icon: "chevron.down", action: {})
-            
-            Spacer()
-            
-            // Favorite Button
-            FavoriteButtonView(isFavorite: $isFavorite)
         }
         //.padding(.horizontal) // Padding for header
     }
@@ -98,7 +247,7 @@ struct CircleButtonView: View {
     
     var body: some View {
         Button(action: action) {
-            Image(systemName: icon)
+            Text(icon)
                 .font(.system(size: 20, weight: .semibold))
                 .foregroundColor(.black.opacity(0.7))
                 .frame(width: 44, height: 44)
@@ -128,6 +277,7 @@ struct FavoriteButtonView: View {
 // MARK: - Place Title Section
 struct PlaceTitleSection: View {
     let placeName: String
+    let placeInfo: String
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -135,7 +285,7 @@ struct PlaceTitleSection: View {
                 .font(.largeTitle)
                 .fontWeight(.bold)
             
-            Text("Yosemite National Park is in California’s Sierra Nevada mountains. It’s famed for its giant, ancient sequoia trees.")
+            Text(placeInfo)
                 .font(.subheadline)
                 .foregroundColor(.gray)
         }
@@ -260,5 +410,5 @@ struct NotesView: View {
 
 //  MARK: - PlaceDetailSheetView
 #Preview {
-    PlaceDetailSheetView(placeName: "Yosemite")
+    PlaceDetailSheetView(placeName: "Vietnam")
 }

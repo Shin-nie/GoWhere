@@ -13,6 +13,7 @@ struct LaunchScreenView: View {
     // STATE for managing username and login status
     @State private var username: String = ""
     @State private var isLoggedIn: Bool = false
+    @State private var isGuest: Bool = false  // this state to track guest status
     
     // LAUNCH SCREEN VIEW
     var body: some View {
@@ -27,7 +28,7 @@ struct LaunchScreenView: View {
                         .background(Color.white)
                 } else {
                     // Otherwise, navigate to LoginView
-                    LoginView(username: $username, isLoggedIn: $isLoggedIn)
+                    LoginView(username: $username, isLoggedIn: $isLoggedIn, isGuest: $isGuest)
                         .background(Color.white)
                 }
             } else {

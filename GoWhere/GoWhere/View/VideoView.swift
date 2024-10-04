@@ -31,12 +31,12 @@ struct VideoView: View {
     
     @State var text: String = ""
     
-    // Array of video IDs (you can add more or change them)
+    // Array of video IDs
     let videoIDs = [
-        "dQw4w9WgXcQ", // First video ID
-        "9bZkp7q19f0", // Second video ID
-        "3JZ_D3ELwOQ", // Third video ID
-        "RgKAFK5djSk"  // Fourth video ID
+        "hVFp1T_2TzY", // Iceland 4K Travel
+        "5bsO58DpXLU", // Japan Top 10
+        "b_Xzxxs81mE", // Best Travel Destinations 2024
+        "VRhr5ybpDIo"  // Solo Travel Guide
     ]
     
     var body: some View {
@@ -60,7 +60,7 @@ struct VideoView: View {
                 //.navigationTitle("YouTube Videos")
             }
             
-            SearchBarView(text: $text, placeholder: "Search for Videos")
+//            SearchBarView(text: $text, placeholder: "Search for Videos")
         }
     }
 }
