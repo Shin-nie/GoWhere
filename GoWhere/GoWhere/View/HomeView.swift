@@ -155,11 +155,11 @@ struct FeaturedCardView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             
-            // Background Image with a slight blur effect to add depth
+            //  Background Image with a slight blur effect to add depth
             Image(featuredPlace.imageName)
                 .resizable()
                 .scaledToFill()
-            //                .frame(width: 420, height: 480)
+            //  .frame(width: 420, height: 480)
                 .frame(width: UIScreen.main.bounds.width * 0.95, height: UIScreen.main.bounds.height * 0.55) // Makes it more responsive
                 .cornerRadius(20)
                 .clipped()
