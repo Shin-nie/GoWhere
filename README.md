@@ -19,7 +19,7 @@ Here’s a brief list of the APIs used in **GoWhere**:
 - **Travel Info API**: Provides real-time information about countries, including:
   - Must-visit landmarks and hidden gems 
   - Travel advisories and safety information
-  - interactive images of countries 
+  - Interactive images of countries 
 
 - **YouTube API**: Fetches travel videos related to the selected country, offering a visual exploration of destinations.
 - **REST Country API**: Fetches countries' coordinates and flags
