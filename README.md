@@ -3,7 +3,6 @@ Ready to explore the world? GoWhere is your ul-mate travel companion! Discover p
 des-na-ons, view tourist a:rac-ons and ac-vi-es, and watch curated travel videos all in one place.
 
 # Preview
-https://github.com/user-attachments/assets/7e3a5e1f-ccf2-4ed1-ac1e-3b472e99f928
 
 # GoWhere Features
 1. Explore Countries in Real-Time: Discover detailed informa-on about countries, including
