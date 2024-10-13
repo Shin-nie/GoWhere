@@ -1,20 +1,8 @@
 //
 //  PlaceDetailSheetView.swift
 //  GoWhere
-//
-//  Created by Hang Vu on 30/9/2024.
-//
 
 import SwiftUI
-
-// Sample image URLs
-let sampleImageURLs3 = [
-    "https://images.unsplash.com/photo-1431794062232-2a99a5431c6c",
-    "https://images.unsplash.com/photo-1465256410760-10640339c72c",
-    "https://images.unsplash.com/photo-1633466858898-a51e5fa02c91",
-    "https://images.unsplash.com/photo-1498855592392-af2bf1e0a4c7",
-    "https://images.unsplash.com/photo-1604542031658-5799ca5d7936"
-]
 
 let pinkGradient = LinearGradient(
     gradient: Gradient(colors: [Color.yellow, Color.pink.opacity(0.7)]), // Gradient with opacity

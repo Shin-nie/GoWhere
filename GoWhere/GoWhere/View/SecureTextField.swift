@@ -1,9 +1,6 @@
 //
 //  SecureTextField.swift
 //  LoginCoreData
-//
-//  Created by Hang Vu on 2/10/2024.
-//
 
 import SwiftUI
 

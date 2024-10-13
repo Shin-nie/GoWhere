@@ -1,10 +1,6 @@
 //
 //  MapView.swift
 //  GoWhere
-//
-//  Created by Hang Vu on 27/9/2024.
-//
-
 import SwiftUI
 import MapKit
 
