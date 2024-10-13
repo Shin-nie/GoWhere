@@ -25,11 +25,14 @@ struct MapView: View {
     // Sheet position tracking (offscreen: 500, halfway: 250, fully visible: 0)
     @State private var sheetOffset: CGFloat = 500
     
-    init(appVM: AppViewModel){
-        self.appVM = appVM;
+    var initialCountry: String?
+    
+    init(appVM: AppViewModel, initialCountry: String? = nil) {
+        self.appVM = appVM
+        self.initialCountry = initialCountry
         
-        //  FETCH ALL COUNTRY
-        countryAPI.fetchAllCountries();
+        // Fetch ALL countries when MapView is initialized
+        countryAPI.fetchAllCountries()
     }
     
     var body: some View {
@@ -96,13 +99,26 @@ struct MapView: View {
         }
         //  Pull Country
         .onReceive(countryAPI.$countriesList) { countryData in
-            if let safeCountryData = countryData{
+            if let safeCountryData = countryData {
                 countryList = safeCountryData;
+                
+                // Automatically center on the initial country if provided
+                if let initialCountry = initialCountry, let country = countryList.first(where: { $0.name.common == initialCountry }) {
+                    setRegionForCountry(country) // Center the map on the selected country
+                    selectedPlace = initialCountry // Automatically show PlaceDetailSheetView
+                    withAnimation(.interactiveSpring()) {
+                        sheetOffset = 50 // Show the sheet
+                    }
+                }
             }
         }
-        
     }
     
+    // MARK: - Helper Function to Set Region
+         func setRegionForCountry(_ country: Country) {
+            let location = CLLocationCoordinate2D(latitude: country.latlng[0], longitude: country.latlng[1])
+            region = MKCoordinateRegion(center: location, span: MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5))
+        }
 }
 
 //    .onTapGesture {

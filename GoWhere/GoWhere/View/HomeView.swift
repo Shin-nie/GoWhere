@@ -12,6 +12,9 @@ struct HomeView: View {
     @State private var displayList: [Country] = [];
     @State private var searchString: String = "";
     
+    // MARK: - Navigation Link to MapView
+    @State private var selectedCountry: String? = nil // Track selected country
+    
     var filteredList: [Country] {
         if searchString.isEmpty {
             return displayList
@@ -87,21 +90,30 @@ struct HomeView: View {
                 }
                 
                 //  MARK: - Tab View
-//                TabSelectionView(selectedTab: $viewModel.selectedTab)
-                    .offset(y: -10)
+                //                TabSelectionView(selectedTab: $viewModel.selectedTab)
+                .offset(y: -10)
                 //  Conditionally show SampleCardView based on the selected tab
                 // MARK: Place Card under Tab - Dynamically loaded via ViewModel
-                ForEach(filteredList){current in
-                    PlaceCardView(country: current)
-                        .onTapGesture{
-                            print(current.name.common)
-                            
-                            //  Eeee lam cai nay xuat hien nhu ben Map View nhu nao dzay
-                            PlaceDetailSheetView(placeName: current.name.common)
-                                
+                ForEach(filteredList) { current in
+                    ZStack {
+                        // NavigationLink to handle the navigation to MapView
+                        NavigationLink(
+                            destination: MapView(appVM: AppViewModel(), initialCountry: current.name.common),
+                            tag: current.name.common,
+                            selection: $selectedCountry
+                        ) {
+                            EmptyView() // Invisible but handles navigation
                         }
+                        .hidden() // Hides the NavigationLink but keeps it functional
+
+                        // Foreground view that user interacts with
+                        PlaceCardView(country: current)
+                            .onTapGesture {
+                                print(current.name.common)
+                                selectedCountry = current.name.common // Trigger the navigation
+                            }
+                    }
                 }
-                
             }
             .padding(.horizontal)
             //  MARK: - ANIMATION ADDING (auto-scrolling)
@@ -122,7 +134,7 @@ struct HomeView: View {
                 displayList = safeCountryData;
             }
         }
-        //        .ignoresSafeArea(.all, edges: .bottom) // Ignore the bottom safe area to prevent the white frame from appearing
+        //  .ignoresSafeArea(.all, edges: .bottom) // Ignore the bottom safe area to prevent the white frame from appearing
         .navigationTitle("Explore Places")
     }
     
@@ -279,7 +291,7 @@ struct PlaceCardView: View {
                 .stroke(.black)
                 .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
                 .shadow(color: .black.opacity(0.1), radius: 1, x: 2, y:5)
-            )
+        )
         //  PADDING Around Button
         .padding(.vertical, 3)
     }
