@@ -8,12 +8,32 @@
 import SwiftUI
 
 struct HomeView: View {
+    @State var countryAPI: CountryManager = CountryManager();
+    @State private var displayList: [Country] = [];
+    @State private var searchString: String = "";
+    
+    // MARK: - Navigation Link to MapView
+    @State private var selectedCountry: String? = nil // Track selected country
+    
+    var filteredList: [Country] {
+        if searchString.isEmpty {
+            return displayList
+        } else {
+            return displayList.filter { country in
+                country.name.common.localizedCaseInsensitiveContains(searchString)
+            }
+        }
+    }
+    
     //  MARK: - PROPERTIES
     //  @State var selectedTab: Int = 0
     //  Manages the TabSelectionView ("For You", "Updated", "Saved")
     @StateObject var viewModel = PlaceViewModel()
     
     @StateObject var featuredViewModel = FeaturedCardViewModel() // ViewModel for FeaturedCardView
+    
+    // Sheet position tracking (offscreen: 500, halfway: 250, fully visible: 0)
+    @State private var sheetOffset: CGFloat = 50
     
     let timer = Timer.publish(every: 4.5, on: .main, in: .common).autoconnect() // Auto-scroll timer - every 4.5 seconds
     
@@ -29,7 +49,7 @@ struct HomeView: View {
             
             VStack(spacing: 16) {
                 //  MARK: Search Bar View
-                SearchBarView(text: .constant(""), placeholder: "Search for places")
+                SearchBarView(text: $searchString, placeholder: "Search for places")
                 
                 //  MARK: Horizontal Scrollable FeaturedCardView with Dots and 3D Effect
                 TabView(selection: $featuredViewModel.selectedFeaturedTab) {
@@ -70,12 +90,30 @@ struct HomeView: View {
                 }
                 
                 //  MARK: - Tab View
-                TabSelectionView(selectedTab: $viewModel.selectedTab)
-                    .offset(y: -10)
+                //                TabSelectionView(selectedTab: $viewModel.selectedTab)
+                .offset(y: -10)
                 //  Conditionally show SampleCardView based on the selected tab
                 // MARK: Place Card under Tab - Dynamically loaded via ViewModel
-                PlaceCardView(place: viewModel.getCurrentPlace())
-                    .offset(y: -5)
+                ForEach(filteredList) { current in
+                    ZStack {
+                        // NavigationLink to handle the navigation to MapView
+                        NavigationLink(
+                            destination: MapView(appVM: AppViewModel(), initialCountry: current.name.common),
+                            tag: current.name.common,
+                            selection: $selectedCountry
+                        ) {
+                            EmptyView() // Invisible but handles navigation
+                        }
+                        .hidden() // Hides the NavigationLink but keeps it functional
+
+                        // Foreground view that user interacts with
+                        PlaceCardView(country: current)
+                            .onTapGesture {
+                                print(current.name.common)
+                                selectedCountry = current.name.common // Trigger the navigation
+                            }
+                    }
+                }
             }
             .padding(.horizontal)
             //  MARK: - ANIMATION ADDING (auto-scrolling)
@@ -87,7 +125,16 @@ struct HomeView: View {
             //                }
             //            }
         }
-        //        .ignoresSafeArea(.all, edges: .bottom) // Ignore the bottom safe area to prevent the white frame from appearing
+        .onAppear {
+            UITabBar.appearance().isHidden = true // Hide the system tab bar
+            countryAPI.fetchAllCountries();
+        }
+        .onReceive(countryAPI.$countriesList) { countryData in
+            if let safeCountryData = countryData{
+                displayList = safeCountryData;
+            }
+        }
+        //  .ignoresSafeArea(.all, edges: .bottom) // Ignore the bottom safe area to prevent the white frame from appearing
         .navigationTitle("Explore Places")
     }
     
@@ -218,38 +265,35 @@ struct PlaceCardView: View {
     //    var title: String
     //    var description: String
     //    var imageName: String
-    var place: Place // Use protocol-based data
+    var country: Country // Use protocol-based data
     
     var body: some View {
-        HStack {
-            Image(place.imageName)
-            //                 .resizable()
-            //                 .aspectRatio(contentMode: .fill)
-            //                 .frame(width: 80, height: 80)
-            //                 .cornerRadius(8)
-                .resizable()
-                .scaledToFill()
-                .frame(width: 140)
-                .cornerRadius(8)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(place.title)
-                    .font(.headline)
-                    .foregroundColor(.black)
-                
-                Text(place.description)
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
+        HStack{
+            AsyncImage(url: URL(string: country.flags.png)){ image in
+                image.resizable();
+            } placeholder: {
+                Color.gray;
             }
-            .padding(.leading, 8)
+            .border(.gray)
+            .frame(width: 55, height: 38)
             
-            Spacer()
+            Text("\(country.name.common)")
+                .font(.custom("MontserratAlternates-SemiBold", size: 20))
+                .tracking(2)
+                .padding(.horizontal, 10);
+            
+            Spacer();
         }
-        .padding()
-        .background(Color.white)
-        .cornerRadius(12)
-        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
-        .shadow(color: .black.opacity(0.1), radius: 1, x: 2, y:5)
+        .padding(.horizontal)
+        .padding(.vertical, 15)
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(.black)
+                .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+                .shadow(color: .black.opacity(0.1), radius: 1, x: 2, y:5)
+        )
+        //  PADDING Around Button
+        .padding(.vertical, 3)
     }
 }
 

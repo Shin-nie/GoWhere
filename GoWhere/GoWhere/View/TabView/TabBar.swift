@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TabBar: View {
     
+    
     //  MARK: - PROPERTY
     @State var current = "Home"
     
@@ -32,9 +33,7 @@ struct TabBar: View {
                 Spacer()
                 tabButton // Tab buttons at the bottom
             }
-            .onAppear {
-                UITabBar.appearance().isHidden = true // Hide the system tab bar
-            }
+            
         }
     }
     
@@ -44,7 +43,7 @@ struct TabBar: View {
             HomeView()
                 .tag("Home")
             
-            MapView()
+            MapView(appVM: AppViewModel())
                 .tag("Info")
             
             //YoutubeView()

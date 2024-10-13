@@ -12,6 +12,9 @@ struct LoginView: View {
     
     @Binding var username: String
     @Binding var isLoggedIn: Bool
+    @Binding var isGuest: Bool // Add this binding
+
+    
     @State private var password = ""
     @State private var message = ""
     
@@ -61,22 +64,29 @@ struct LoginView: View {
                 }
                 
                 // Continue as guest without login
-                NavigationLink(destination: ContentView()) {
-                    Text("Continue as Guest")
-                        .font(.headline)
-                        .padding()
-                        .frame(width: 220, height: 60)
-                        .background(Color.gray)
-                        .cornerRadius(15.0)
-                        .foregroundColor(.white)
-                }
-                .padding(.top, 10)
-                .navigationBarBackButtonHidden()
-                
-                //After login, navigate to TabBar
-                NavigationLink(destination: TabBar(username: $username, isLoggedIn: $isLoggedIn), isActive: $isLoggedIn) {
-                    EmptyView()
-                }
+                                Button(action: {
+                                    isGuest = true
+                                }) {
+                                    Text("Continue as Guest")
+                                        .font(.headline)
+                                        .padding()
+                                        .frame(width: 220, height: 60)
+                                        .background(Color.gray)
+                                        .cornerRadius(15.0)
+                                        .foregroundColor(.white)
+                                }
+                                .padding(.top, 10)
+                                .navigationBarBackButtonHidden()
+                                
+                                //After login, navigate to TabBar
+                                NavigationLink(destination: TabBar(username: $username, isLoggedIn: $isLoggedIn), isActive: $isLoggedIn) {
+                                    EmptyView()
+                                }
+                                
+                                // NavigationLink for guest
+                                NavigationLink(destination: TabBar(username: $username, isLoggedIn: $isLoggedIn), isActive: $isGuest) {
+                                    EmptyView()
+                                }
                 
                 // NavigationLink to SettingsView, activated by isLoggedIn
                 //                NavigationLink(destination: ContentView(), isActive: $isLoggedIn) {
@@ -128,5 +138,5 @@ struct LoginView: View {
 //}
 
 #Preview {
-    LoginView(username: .constant("Sample User"), isLoggedIn: .constant(false))
+    LoginView(username: .constant("Sample User"), isLoggedIn: .constant(false), isGuest: .constant(false))
 }
